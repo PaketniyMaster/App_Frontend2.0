@@ -9,13 +9,17 @@ function RegisterPage() {
     const navigate = useNavigate();
 
     const handleRegister = async () => {
+        debugger
+        alert("Функция handleRegister вызвана!");
+        console.log("📢 Кнопка регистрации нажата!");
         try {
             await register(username, email, password);
             navigate("/login");
         } catch (error) {
-            alert("Ошибка регистрации");
+            console.error("Ошибка регистрации:", error);
         }
     };
+    
 
     return (
         <div className="flex min-h-screen flex-grow items-center justify-center  bg-gray-100">

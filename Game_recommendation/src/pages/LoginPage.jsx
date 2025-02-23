@@ -46,6 +46,7 @@ function LoginPage() {
                     Войти
                 </button>
             </div>
+            <p className="text-center mt-2">Уже есть аккаунт? <a href="/register" className="text-blue-500">Зарегистрироваться</a></p>
         </div>
     );
 }
