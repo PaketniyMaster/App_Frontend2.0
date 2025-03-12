@@ -10,7 +10,6 @@ function RegisterPage() {
 
     const handleRegister = async () => {
         debugger
-        alert("Функция handleRegister вызвана!");
         console.log("📢 Кнопка регистрации нажата!");
         try {
             await register(username, email, password);
