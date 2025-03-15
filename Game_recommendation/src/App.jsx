@@ -4,15 +4,22 @@ import { AuthProvider } from "./context/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { initData } from "@twa-dev/sdk";
 
 function App() {
+    const [userData, setUserData] = useState(null);
+
     useEffect(() => {
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
-        console.log("Пользователь:", initData.user);
+        if (window.Telegram?.WebApp) {
+            const tg = window.Telegram.WebApp;
+            tg.expand();
+            tg.ready();
+            setUserData(initData?.user || "Нет данных");
+        } else {
+            console.log("Telegram WebApp недоступен. Тестируем локально.");
+            setUserData("Локальный тест");
+        }
     }, []);
 
     return (
