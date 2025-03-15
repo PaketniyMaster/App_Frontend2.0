@@ -1,6 +1,8 @@
 import axios from "axios";
 
-const API_URL = "http://127.0.0.1:8000/auth";
+// const API_URL = "http://127.0.0.1:8000/auth";
+const API_URL = import.meta.env.VITE_API_URL + "/auth";
+
 
 export async function login(username, password) {
     try {

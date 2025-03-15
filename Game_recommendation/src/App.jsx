@@ -4,8 +4,17 @@ import { AuthProvider } from "./context/AuthContext";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import HomePage from "./pages/HomePage";
+import { useEffect } from "react";
+import { initData } from "@twa-dev/sdk";
 
 function App() {
+    useEffect(() => {
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+        console.log("Пользователь:", initData.user);
+    }, []);
+
     return (
         <AuthProvider>
             <Router>
