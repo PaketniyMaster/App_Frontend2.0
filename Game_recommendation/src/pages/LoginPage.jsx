@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { login, getUser } from "/src/services/auth";
+import { login, fetchUserProfile } from "/src/services/auth";
 import { useAuth } from "/src/context/AuthContext";
 import { toast } from "react-hot-toast";
 
@@ -13,9 +13,13 @@ function LoginPage() {
     const handleLogin = async () => {
         try {
             await login(username, password);
-            const userData = await getUser();
-            setUser(userData);
-            navigate("/");
+            const userData = await fetchUserProfile();
+            if (userData) {
+                setUser(userData);
+                navigate("/");
+            } else {
+                throw new Error("Не удалось получить данные пользователя");
+            }
         } catch (error) {
             toast.error("Ошибка входа! Проверьте логин и пароль.");
         }
@@ -46,7 +50,12 @@ function LoginPage() {
                     Войти
                 </button>
             </div>
-            <p className="text-center mt-2">Уже есть аккаунт? <a href="/register" className="text-blue-500">Зарегистрироваться</a></p>
+            <p className="text-center mt-2">
+                Уже есть аккаунт?{" "}
+                <a href="/register" className="text-blue-500">
+                    Зарегистрироваться
+                </a>
+            </p>
         </div>
     );
 }
