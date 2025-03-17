@@ -7,7 +7,8 @@ function HomePage() {
     const navigate = useNavigate();
     const [search, setSearch] = useState("");
     const [games, setGames] = useState([]);
-
+    const API_URL = import.meta.env.VITE_API_URL;
+    
     const handleLogout = () => {
         localStorage.removeItem("token");
         setUser(null);
@@ -20,7 +21,7 @@ function HomePage() {
         if (!token) return;
 
         try {
-            const response = await fetch(`http://127.0.0.1:8000/games/search?query=${search}`, {
+            const response = await fetch(`${API_URL}/games/search?query=${search}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             const data = await response.json();
