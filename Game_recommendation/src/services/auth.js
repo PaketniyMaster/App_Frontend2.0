@@ -88,14 +88,22 @@ export async function searchGames(query) {
 
     try {
         const response = await fetch(`${API_URL}/games/search?query=${encodeURIComponent(query)}`, {
-            headers: { Authorization: `Bearer ${token}` },
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include',
         });
 
-        if (!response.ok) throw new Error("Ошибка поиска");
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Ошибка поиска: ${response.status} - ${errorText}`);
+        }
 
         return await response.json();
     } catch (error) {
-        console.error("Ошибка поиска игр:", error);
+        console.error("Ошибка поиска игр:", error.message);
         return [];
     }
 }
