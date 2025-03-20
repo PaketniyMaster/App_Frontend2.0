@@ -1,30 +1,72 @@
 import { useState } from "react";
-import { login, getUser } from "./services/auth";
+import { useNavigate } from "react-router-dom";
+import { login, fetchUserProfile } from "../services/auth";
+import { toast } from "react-hot-toast";
 
-function LoginForm() {
+function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
-        await login(username, password);
-        const userData = await getUser();
-        setUser(userData);
+        if (!username || !password) return toast.error("Введите логин и пароль");
+        try {
+            setLoading(true);
+            await login(username, password);
+            const userData = await fetchUserProfile();
+            if (userData) {
+                navigate("/");
+            } else {
+                throw new Error("Не удалось получить данные пользователя");
+            }
+        } catch (error) {
+            toast.error("Ошибка входа! Проверьте логин и пароль.");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") handleLogin();
     };
 
     return (
-        <div>
-            {!user ? (
-                <div>
-                    <input type="text" placeholder="Username" onChange={(e) => setUsername(e.target.value)} />
-                    <input type="password" placeholder="Password" onChange={(e) => setPassword(e.target.value)} />
-                    <button onClick={handleLogin}>Login</button>
-                </div>
-            ) : (
-                <div>Welcome, {user.username}!</div>
-            )}
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+            <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+                <h2 className="text-xl font-bold mb-4 text-center">Вход</h2>
+                <input
+                    type="text"
+                    placeholder="Имя пользователя"
+                    className="w-full p-2 border rounded mb-2"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+                <input
+                    type="password"
+                    placeholder="Пароль"
+                    className="w-full p-2 border rounded mb-2"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                />
+                <button
+                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+                    onClick={handleLogin}
+                    disabled={loading}
+                >
+                    {loading ? "Вход..." : "Войти"}
+                </button>
+            </div>
+            <p className="text-center mt-2">
+                Нет аккаунта?{" "}
+                <a href="/register" className="text-blue-500">
+                    Зарегистрироваться
+                </a>
+            </p>
         </div>
     );
 }
 
-export default LoginForm;
+export default LoginPage;
