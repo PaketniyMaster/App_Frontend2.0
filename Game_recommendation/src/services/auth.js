@@ -1,5 +1,5 @@
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-// || 'http://localhost:8000'
+
 // Получение токена из localStorage
 export function getToken() {
     return localStorage.getItem("token");
@@ -15,9 +15,10 @@ export function removeToken() {
     localStorage.removeItem("token");
 }
 
-// Проверка авторизации пользователя
+// Проверка авторизации пользователя (учёт загрузки токена)
 export function isAuthenticated() {
-    return !!getToken();
+    const token = getToken();
+    return Boolean(token);
 }
 
 // Вход пользователя
@@ -42,21 +43,27 @@ export async function login(username, password) {
     }
 }
 
+// Регистрация пользователя
 export async function register(username, password) {
-    const response = await fetch(`${API_URL}/auth/register`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-    });
+    try {
+        const response = await fetch(`${API_URL}/auth/register`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
 
-    if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Ошибка регистрации:", errorData);
-        throw new Error(errorData.detail || "Ошибка регистрации");
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || "Ошибка регистрации");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Ошибка регистрации:", error);
+        throw error;
     }
-
-    return await response.json();
 }
+
 // Выход пользователя
 export function logout() {
     removeToken();
@@ -82,16 +89,28 @@ export async function fetchUserProfile() {
 }
 
 // Поиск игр (с проверкой токена)
-export async function searchGames(query) {
+export async function searchGames({ query, tags, date, min_rating, max_rating }) {
     const token = getToken();
-    if (!token) return [];
+    if (!token) {
+        console.warn("Токен не найден, доступ к поиску ограничен");
+        return [];
+    }
 
     try {
-        const response = await fetch(`${API_URL}/games/search?query=${encodeURIComponent(query)}`, {
-            method: 'GET',
+        const params = new URLSearchParams();
+        if (query) params.append("query", query);
+        if (tags) params.append("tags", tags);
+        if (date) params.append("date", date);
+        if (min_rating) params.append("min_rating", min_rating);
+        if (max_rating) params.append("max_rating", max_rating);
+
+        console.log("Отправляем запрос:", params.toString());
+
+        const response = await fetch(`${API_URL}/games/search?${params.toString()}`, {
+            method: "GET",
             headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
             },
         });
 
@@ -106,4 +125,3 @@ export async function searchGames(query) {
         return [];
     }
 }
-

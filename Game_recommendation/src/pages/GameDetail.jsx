@@ -31,8 +31,14 @@ function GameDetail() {
 
     const handleBack = () => {
         const searchState = localStorage.getItem("searchState");
-        navigate("/", { state: searchState ? JSON.parse(searchState) : {} });
-    };
+        if (searchState) {
+          navigate("/", { state: JSON.parse(searchState), replace: true });
+        } else {
+          navigate("/", { replace: true });
+        }
+      };
+      
+
 
     if (!game) return <p className="text-white">Загрузка...</p>;
 

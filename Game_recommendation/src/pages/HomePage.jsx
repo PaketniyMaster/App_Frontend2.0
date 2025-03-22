@@ -1,105 +1,140 @@
-import { useNavigate, Link } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
 import { getToken, removeToken, searchGames, fetchUserProfile } from "../services/auth";
+import Search from "../components/Search";
 
 function HomePage() {
-    const [user, setUser] = useState(null);
-    const [search, setSearch] = useState("");
-    const [games, setGames] = useState([]);
-    const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [games, setGames] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [randomGif, setRandomGif] = useState("");
+  const navigate = useNavigate();
+  const location = useLocation();
+  const lastSearchTime = useRef(0);
 
-    useEffect(() => {
-        const loadUser = async () => {
-            const profile = await fetchUserProfile();
-            setUser(profile);
-        };
+  const gifs = [
+    "https://giphy.com/embed/dSeTdOmmA1u8e0LBsx",
+    "https://giphy.com/embed/3oKIPznTgmcQGOlqyA",
+    "https://giphy.com/embed/zaCojXv2S01zy",
+    "https://giphy.com/embed/l4FGIgsVPdoRd2wbS",
+    "https://giphy.com/embed/Sr9NHwRKlsD3unMK43",
+  ];
 
-        if (getToken()) loadUser();
-    }, []);
-
-    const handleLogout = () => {
-        removeToken();
-        setUser(null);
-        navigate("/login");
+  useEffect(() => {
+    const loadUser = async () => {
+      if (getToken()) {
+        try {
+          const profile = await fetchUserProfile();
+          setUser(profile);
+        } catch {
+          removeToken();
+        }
+      }
+      setIsLoading(false);
     };
+    loadUser();
+  }, []);
 
-    const handleSearch = async () => {
-        if (!search.trim()) return;
-        const results = await searchGames(search);
-        setGames(results);
-        localStorage.setItem("searchState", JSON.stringify({ query: search, results }));
-    };
+  useEffect(() => {
+    if (!isLoading) {
+      const savedSearch = location.state || JSON.parse(localStorage.getItem("searchState"));
+      if (savedSearch?.results) {
+        setGames(savedSearch.results);
+      }
+    }
+  }, [location, isLoading]);
 
-    const handleKeyDown = (e) => {
-        if (e.key === "Enter") handleSearch();
-    };
+  const handleLogout = () => {
+    removeToken();
+    setUser(null);
+    setGames([]);
+    localStorage.removeItem("searchState");
+    navigate("/login");
+  };
 
-    return (
-        <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center pt-16 px-4">
-            <header className="fixed top-0 left-0 w-full flex items-center justify-between p-2 bg-gray-800 shadow-md space-x-2">
-                <div className="flex-1 flex justify-center">
-                    <input
-                        type="text"
-                        placeholder="Поиск игр..."
-                        className="p-2 rounded-lg bg-gray-700 text-white placeholder-gray-400 outline-none focus:ring-2 focus:ring-blue-400 w-full sm:max-w-md lg:max-w-lg"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        onKeyDown={handleKeyDown}
-                    />
-                    <button
-                        className="ml-2 bg-blue-500 text-white px-4 py-2 rounded-lg"
-                        onClick={handleSearch}
-                    >
-                        Поиск
-                    </button>
-                </div>
-                <div className="flex items-center space-x-2">
-                    {user && <span className="hidden sm:inline text-sm md:text-lg">Привет, {user.username}!</span>}
-                    {user ? (
-                        <button
-                            className="bg-red-500 text-white px-4 py-2 rounded-lg"
-                            onClick={handleLogout}
-                        >
-                            Выйти
-                        </button>
-                    ) : (
-                        <Link
-                            className="bg-blue-500 text-white px-4 py-2 rounded-lg"
-                            to="/login"
-                        >
-                            Войти
-                        </Link>
-                    )}
-                </div>
-            </header>
+  const handleSearch = async (filters) => {
+    if (isLoading) return;
 
-            <div className="mt-6 w-full max-w-md">
-                {games.length > 0 ? (
-                    games.map((game) => (
-                        <div
-                            key={game.game_id}
-                            onClick={() => navigate(`/game/${game.game_id}`)}
-                            className="cursor-pointer flex items-center bg-gray-800 p-3 rounded-lg mb-3 shadow"
-                        >
-                            <img
-                                src={game.image_url}
-                                alt={game.name}
-                                className="w-16 h-16 rounded-lg object-cover mr-3"
-                            />
-                            <div>
-                                <h3 className="text-lg font-semibold">{game.name}</h3>
-                                <p className="text-gray-400 text-sm">
-                                    Дата выхода: {game.release_date || "Неизвестно"}
-                                </p>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    search && <p className="text-gray-400">Игры не найдены</p>
-                )}
-            </div>
+    if (!user) {
+      setErrorMessage("Пожалуйста, войдите, чтобы использовать поиск");
+      setRandomGif(gifs[Math.floor(Math.random() * gifs.length)]);
+      return;
+    }
+
+    if (Date.now() - lastSearchTime.current < 2000) return;
+    lastSearchTime.current = Date.now();
+
+    try {
+      const results = await searchGames(filters);
+      setGames(results);
+      localStorage.setItem("searchState", JSON.stringify({ query: filters.query, results }));
+    } catch (error) {
+      setErrorMessage("Ошибка при поиске игр.");
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center pt-16 px-4">
+      <header className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-gray-800 shadow-md">
+        <Search onSearch={handleSearch} />
+        <div className="flex items-center space-x-4">
+          {user && <span className="hidden sm:inline text-sm md:text-lg">Привет, {user.username}!</span>}
+          {user ? (
+            <button className="bg-red-500 text-white px-4 py-2 rounded-lg" onClick={handleLogout}>
+              Выйти
+            </button>
+          ) : (
+            <Link className="bg-blue-500 text-white px-2 py-2 rounded-lg w-[60px] sm:w-auto" to="/login">
+              Войти
+            </Link>
+          )}
         </div>
-    );
+      </header>
+
+      {errorMessage && (
+        <div className="text-center mt-4">
+          <p className="text-red-400">{errorMessage}</p>
+          {randomGif && (
+            <iframe
+              src={randomGif}
+              width="480"
+              height="360"
+              frameBorder="0"
+              allowFullScreen
+              title="Random GIF"
+            />
+          )}
+        </div>
+      )}
+
+      <div className="mt-6 w-full max-w-md">
+        {games.length > 0 ? (
+          games.map((game) => (
+            <div
+              key={game.game_id}
+              onClick={() => navigate(`/game/${game.game_id}`)}
+              className="cursor-pointer flex items-center bg-gray-800 p-3 rounded-lg mb-3 shadow"
+            >
+              <img
+                src={game.image_url}
+                alt={game.name}
+                className="w-16 h-16 rounded-lg object-cover mr-3"
+              />
+              <div>
+                <h3 className="text-lg font-semibold">{game.name}</h3>
+                <p className="text-gray-400 text-sm">
+                  Дата выхода: {game.release_date || "Неизвестно"}
+                </p>
+              </div>
+            </div>
+          ))
+        ) : (
+          user && <p className="text-gray-400">Игры не найдены</p>
+        )}
+      </div>
+    </div>
+  );
 }
 
 export default HomePage;
