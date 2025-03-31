@@ -1,5 +1,6 @@
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import GameCard from "../components/GameCard";
 import { getToken, removeToken, searchGames, fetchUserProfile } from "../services/auth";
 import Search from "../components/Search";
 
@@ -23,18 +24,25 @@ function HomePage() {
 
   useEffect(() => {
     const loadUser = async () => {
-      if (getToken()) {
-        try {
-          const profile = await fetchUserProfile();
-          setUser(profile);
-        } catch {
-          removeToken();
+        if (getToken()) {
+            try {
+                const profile = await fetchUserProfile();
+                if (!profile) {
+                    setUser(null);
+                    setGames([]);
+                    localStorage.clear();
+                } else {
+                    setUser(profile);
+                }
+            } catch {
+                removeToken();
+                localStorage.clear();
+            }
         }
-      }
-      setIsLoading(false);
+        setIsLoading(false);
     };
     loadUser();
-  }, []);
+}, []);
 
   useEffect(() => {
     if (!isLoading) {
@@ -76,7 +84,7 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center pt-16 px-4">
-      <header className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-gray-800 shadow-md">
+      <header className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-gray-800 shadow-md z-20">
         <Search onSearch={handleSearch} />
         <div className="flex items-center space-x-4">
           {user && <span className="hidden sm:inline text-sm md:text-lg">Привет, {user.username}!</span>}
@@ -108,27 +116,9 @@ function HomePage() {
         </div>
       )}
 
-      <div className="mt-6 w-full max-w-md">
+      <div className="mt-6 w-full max-w-md z-10">
         {games.length > 0 ? (
-          games.map((game) => (
-            <div
-              key={game.game_id}
-              onClick={() => navigate(`/game/${game.game_id}`)}
-              className="cursor-pointer flex items-center bg-gray-800 p-3 rounded-lg mb-3 shadow"
-            >
-              <img
-                src={game.image_url}
-                alt={game.name}
-                className="w-16 h-16 rounded-lg object-cover mr-3"
-              />
-              <div>
-                <h3 className="text-lg font-semibold">{game.name}</h3>
-                <p className="text-gray-400 text-sm">
-                  Дата выхода: {game.release_date || "Неизвестно"}
-                </p>
-              </div>
-            </div>
-          ))
+          games.map((game) => <GameCard key={game.game_id} game={game} />)
         ) : (
           user && <p className="text-gray-400">Игры не найдены</p>
         )}

@@ -79,6 +79,13 @@ export async function fetchUserProfile() {
             headers: { Authorization: `Bearer ${token}` },
         });
 
+        if (response.status === 401) {
+            console.warn("Токен истек. Очищаем localStorage.");
+            removeToken();
+            localStorage.clear();
+            return null;
+        }
+
         if (!response.ok) throw new Error("Ошибка получения профиля");
 
         return await response.json();
@@ -89,7 +96,7 @@ export async function fetchUserProfile() {
 }
 
 // Поиск игр (с проверкой токена)
-export async function searchGames({ query, tags, date, min_rating, max_rating }) {
+export async function searchGames({ query, tags, min_rating, max_rating }) {
     const token = getToken();
     if (!token) {
         console.warn("Токен не найден, доступ к поиску ограничен");
@@ -100,7 +107,6 @@ export async function searchGames({ query, tags, date, min_rating, max_rating })
         const params = new URLSearchParams();
         if (query) params.append("query", query);
         if (tags) params.append("tags", tags);
-        if (date) params.append("date", date);
         if (min_rating) params.append("min_rating", min_rating);
         if (max_rating) params.append("max_rating", max_rating);
 
