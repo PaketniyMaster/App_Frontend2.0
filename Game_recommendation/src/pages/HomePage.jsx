@@ -4,6 +4,7 @@ import GameCard from "../components/GameCard";
 import { getToken, removeToken, searchGames, fetchUserProfile } from "../services/auth";
 import Search from "../components/Search";
 
+
 function HomePage() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);

@@ -2,20 +2,26 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login, fetchUserProfile } from "../services/auth";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { login as setToken, setName } from "../features/user/userSlice";
 
 function LoginPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleLogin = async () => {
         if (!username || !password) return toast.error("Введите логин и пароль");
         try {
             setLoading(true);
-            await login(username, password);
+            const tokenData = await login(username, password);
             const userData = await fetchUserProfile();
-            if (userData) {
+    
+            if (userData && tokenData?.access_token) {
+                dispatch(setToken(tokenData.access_token));
+                dispatch(setName(userData.username)); // или userData.name — зависит от API
                 navigate("/");
             } else {
                 throw new Error("Не удалось получить данные пользователя");
