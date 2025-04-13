@@ -11,23 +11,25 @@ const userSlice = createSlice({
 
     reducers:{
         setName: (state, action) => {
-            state.name = action.payload
+            state.name = action.payload;
         },
         
         login: (state, action) => {
-            state.token = action.payload
+            state.token = action.payload;
         },
 
         logout: (state) => {
             state.name = '';
-            state.token = ''
+            state.token = '';
         },
 
+        // Новый редуктор для регистрации
+        register: (state, action) => {
+            state.name = action.payload.name;
+            state.token = action.payload.token;
+        },
     },
-
-
 });
 
-
-export const { setName, login, logout } = userSlice.actions;
+export const { setName, login, logout, register } = userSlice.actions;
 export default userSlice.reducer;

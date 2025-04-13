@@ -1,19 +1,27 @@
 import { useState } from "react";
-import { register } from "../services/auth";
+import { register as registerService } from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
+import { useDispatch } from "react-redux";
+import { register } from "../features/user/userSlice";  // Импортируем редуктор
 
 function RegisterPage() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleRegister = async () => {
         if (!username || !password) return toast.error("Введите логин и пароль");
+
         try {
             setLoading(true);
-            await register(username, password);
+            const data = await registerService(username, password);  // Предполагается, что registerService возвращает {name, token}
+
+            // После успешной регистрации обновляем состояние в Redux
+            dispatch(register({ name: username, token: data.token }));
+
             toast.success("Регистрация успешна. Выполните вход.");
             navigate("/login");
         } catch (error) {

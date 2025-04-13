@@ -1,19 +1,30 @@
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import GameCard from "../components/GameCard";
-import { getToken, removeToken, searchGames, fetchUserProfile } from "../services/auth";
 import Search from "../components/Search";
-
+import { getToken, removeToken, searchGames, fetchUserProfile } from "../services/auth";
+import {
+  setQuery,
+  setTag,
+  setMinRating,
+  setMaxRating,
+  setResults,
+} from "../features/search/searchSlice";
 
 function HomePage() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [games, setGames] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
   const [randomGif, setRandomGif] = useState("");
-  const navigate = useNavigate();
-  const location = useLocation();
   const lastSearchTime = useRef(0);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const query = useSelector((state) => state.search.query);
+  const filters = useSelector((state) => state.search.filters);
+  const results = useSelector((state) => state.search.results);
 
   const gifs = [
     "https://giphy.com/embed/dSeTdOmmA1u8e0LBsx",
@@ -25,60 +36,50 @@ function HomePage() {
 
   useEffect(() => {
     const loadUser = async () => {
-        if (getToken()) {
-            try {
-                const profile = await fetchUserProfile();
-                if (!profile) {
-                    setUser(null);
-                    setGames([]);
-                    localStorage.clear();
-                } else {
-                    setUser(profile);
-                }
-            } catch {
-                removeToken();
-                localStorage.clear();
-            }
+      if (getToken()) {
+        try {
+          const profile = await fetchUserProfile();
+          setUser(profile || null);
+        } catch {
+          removeToken();
         }
-        setIsLoading(false);
-    };
-    loadUser();
-}, []);
-
-  useEffect(() => {
-    if (!isLoading) {
-      const savedSearch = location.state || JSON.parse(localStorage.getItem("searchState"));
-      if (savedSearch?.results) {
-        setGames(savedSearch.results);
       }
-    }
-  }, [location, isLoading]);
+      setIsLoading(false);
+    };
+
+    loadUser();
+  }, []);
 
   const handleLogout = () => {
     removeToken();
     setUser(null);
-    setGames([]);
-    localStorage.removeItem("searchState");
+    dispatch(setResults([]));
     navigate("/login");
   };
 
-  const handleSearch = async (filters) => {
-    if (isLoading) return;
-
-    if (!user) {
-      setErrorMessage("Пожалуйста, войдите, чтобы использовать поиск");
-      setRandomGif(gifs[Math.floor(Math.random() * gifs.length)]);
+  const handleSearch = async () => {
+    if (isLoading || !user) {
+      if (!isLoading && !user) {
+        setErrorMessage("Пожалуйста, войдите, чтобы использовать поиск");
+        setRandomGif(gifs[Math.floor(Math.random() * gifs.length)]);
+      }
       return;
     }
 
-    if (Date.now() - lastSearchTime.current < 2000) return;
+    if (Date.now() - lastSearchTime.current < 2000 || isLoading) return;
     lastSearchTime.current = Date.now();
 
+    const appliedFilters = {
+      query,
+      tags: filters.tags,
+      min_rating: filters.min_rating !== "" ? parseFloat(filters.min_rating) : null,
+      max_rating: filters.max_rating !== "" ? parseFloat(filters.max_rating) : null,
+    };
+
     try {
-      const results = await searchGames(filters);
-      setGames(results);
-      localStorage.setItem("searchState", JSON.stringify({ query: filters.query, results }));
-    } catch (error) {
+      const data = await searchGames(appliedFilters);
+      dispatch(setResults(data));
+    } catch {
       setErrorMessage("Ошибка при поиске игр.");
     }
   };
@@ -118,11 +119,23 @@ function HomePage() {
       )}
 
       <div className="mt-6 w-full max-w-md z-10">
-        {games.length > 0 ? (
-          games.map((game) => <GameCard key={game.game_id} game={game} />)
-        ) : (
-          user && <p className="text-gray-400">Игры не найдены</p>
-        )}
+      {results.length > 0 ? (
+        [...results]
+          .sort((a, b) => {
+            const aHasRating = a.rating !== null && a.rating !== undefined;
+            const bHasRating = b.rating !== null && b.rating !== undefined;
+          
+            if (aHasRating && !bHasRating) return -1;
+            if (!aHasRating && bHasRating) return 1;
+            if (!aHasRating && !bHasRating) return 0;
+          
+            return b.rating - a.rating;
+          })
+          .map((game) => <GameCard key={game.game_id} game={game} />)
+      ) : (
+        user && <p className="text-gray-400">Игры не найдены</p>
+      )}
+      
       </div>
     </div>
   );
