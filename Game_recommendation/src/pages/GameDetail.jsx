@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getToken } from "../services/auth";
 import { useDispatch } from "react-redux";
 import { setQuery, setFilters, setResults } from "../features/search/searchSlice";
+import BackButton from "../components/BackButton";
 
 function GameDetail() {
   const { id } = useParams();
@@ -46,8 +47,10 @@ function GameDetail() {
   if (!game) return <p className="text-white">Загрузка...</p>;
 
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
-      <div className="relative w-full h-64 md:h-96 overflow-hidden">
+    <div className="relative min-h-screen bg-gray-900 text-white">
+      <BackButton onClick={handleBack} />
+
+      <div className="w-full h-64 md:h-96 overflow-hidden">
         {game?.image_url && (
           <img
             src={game.image_url}
@@ -56,14 +59,6 @@ function GameDetail() {
             className="w-full h-full object-cover"
           />
         )}
-        <div className="absolute inset-0 bg-black/40 flex items-start p-4">
-          <button
-            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition"
-            onClick={handleBack}
-          >
-            ⬅️ Назад
-          </button>
-        </div>
       </div>
 
       <div className="p-4 md:p-8">

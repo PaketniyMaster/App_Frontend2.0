@@ -3,7 +3,8 @@ import { register as registerService } from "../services/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
-import { register } from "../features/user/userSlice";  // Импортируем редуктор
+import { register } from "../features/user/userSlice";
+import BackButton from "../components/BackButton"; 
 
 function RegisterPage() {
     const [username, setUsername] = useState("");
@@ -17,9 +18,8 @@ function RegisterPage() {
 
         try {
             setLoading(true);
-            const data = await registerService(username, password);  // Предполагается, что registerService возвращает {name, token}
+            const data = await registerService(username, password);
 
-            // После успешной регистрации обновляем состояние в Redux
             dispatch(register({ name: username, token: data.token }));
 
             toast.success("Регистрация успешна. Выполните вход.");
@@ -35,42 +35,47 @@ function RegisterPage() {
         if (e.key === "Enter") handleRegister();
     };
 
+    const handleBack = () => {
+        navigate(-1); // Возвращаем на предыдущую страницу
+    };
+
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-96">
-                <h2 className="text-2xl font-bold text-center">Регистрация</h2>
-                <input
-                    type="text"
-                    placeholder="Имя пользователя"
-                    className="w-full p-2 my-2 border rounded"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <input
-                    type="password"
-                    placeholder="Пароль"
-                    className="w-full p-2 my-2 border rounded"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <button
-                    className="w-full bg-green-500 text-white p-2 rounded mt-4 hover:bg-green-600 disabled:bg-gray-400"
-                    onClick={handleRegister}
-                    disabled={loading}
-                >
-                    {loading ? "Регистрация..." : "Зарегистрироваться"}
-                </button>
-                <p className="text-center mt-2">
-                    Уже есть аккаунт?{" "}
-                    <a href="/login" className="text-blue-500">
-                        Войти
-                    </a>
-                </p>
-            </div>
+        <div className="relative flex min-h-screen items-center justify-center bg-gray-100">
+          <BackButton />
+          <div className="bg-white p-8 rounded-lg shadow-md w-96">
+            <h2 className="text-2xl font-bold text-center">Регистрация</h2>
+            <input
+              type="text"
+              placeholder="Имя пользователя"
+              className="w-full p-2 my-2 border rounded"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <input
+              type="password"
+              placeholder="Пароль"
+              className="w-full p-2 my-2 border rounded"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              className="w-full bg-green-500 text-white p-2 rounded mt-4 hover:bg-green-600 disabled:bg-gray-400"
+              onClick={handleRegister}
+              disabled={loading}
+            >
+              {loading ? "Регистрация..." : "Зарегистрироваться"}
+            </button>
+            <p className="text-center mt-2">
+              Уже есть аккаунт?{" "}
+              <a href="/login" className="text-blue-500">
+                Войти
+              </a>
+            </p>
+          </div>
         </div>
-    );
+      );
 }
 
 export default RegisterPage;

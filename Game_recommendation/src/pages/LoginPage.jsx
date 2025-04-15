@@ -4,6 +4,8 @@ import { login, fetchUserProfile } from "../services/auth";
 import { toast } from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { login as setToken, setName } from "../features/user/userSlice";
+import BackButton from "../components/BackButton"; 
+
 
 function LoginPage() {
     const [username, setUsername] = useState("");
@@ -38,41 +40,42 @@ function LoginPage() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-            <div className="bg-white p-6 rounded-lg shadow-lg w-80">
-                <h2 className="text-xl font-bold mb-4 text-center">Вход</h2>
-                <input
-                    type="text"
-                    placeholder="Имя пользователя"
-                    className="w-full p-2 border rounded mb-2"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <input
-                    type="password"
-                    placeholder="Пароль"
-                    className="w-full p-2 border rounded mb-2"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                />
-                <button
-                    className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
-                    onClick={handleLogin}
-                    disabled={loading}
-                >
-                    {loading ? "Вход..." : "Войти"}
-                </button>
-            </div>
-            <p className="text-center mt-2">
-                Нет аккаунта?{" "}
-                <a href="/register" className="text-blue-500">
-                    Зарегистрироваться
-                </a>
-            </p>
+        <div className="relative flex flex-col items-center justify-center min-h-screen bg-gray-100">
+          <BackButton />
+          <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+            <h2 className="text-xl font-bold mb-4 text-center">Вход</h2>
+            <input
+              type="text"
+              placeholder="Имя пользователя"
+              className="w-full p-2 border rounded mb-2"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <input
+              type="password"
+              placeholder="Пароль"
+              className="w-full p-2 border rounded mb-2"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <button
+              className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600 disabled:bg-gray-400"
+              onClick={handleLogin}
+              disabled={loading}
+            >
+              {loading ? "Вход..." : "Войти"}
+            </button>
+          </div>
+          <p className="text-center mt-2">
+            Нет аккаунта?{" "}
+            <a href="/register" className="text-blue-500">
+              Зарегистрироваться
+            </a>
+          </p>
         </div>
-    );
+      );
 }
 
 export default LoginPage;
