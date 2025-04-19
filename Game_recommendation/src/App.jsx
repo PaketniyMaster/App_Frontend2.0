@@ -6,6 +6,7 @@ import HomePage from "./pages/HomePage";
 import GameDetail from "./pages/GameDetail";
 import { useEffect, useState } from "react";
 import { initData } from "@twa-dev/sdk";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 function App() {
     const [userData, setUserData] = useState(null);
@@ -31,6 +32,7 @@ function App() {
                 <Route path="/" element={<HomePage type="home" />} />
                 <Route path="/game/:id" element={<GameDetail />} />
             </Routes>
+            <LanguageSwitcher />
         </Router>
     );
 }

@@ -7,9 +7,11 @@ import {
   setMaxRating,
 } from "../features/search/searchSlice";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 export default function GameSearch({ onSearch }) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const query = useSelector((state) => state.search.query);
   const filters = useSelector((state) => state.search.filters);
   const [showFilters, setShowFilters] = useState(false);
@@ -48,7 +50,7 @@ export default function GameSearch({ onSearch }) {
       <div className="flex items-center gap-2 w-full max-w-3xl px-4">
         <input
           type="text"
-          placeholder="Введите название игры"
+          placeholder={t("search.placeholder")}
           value={query}
           onChange={(e) => dispatch(setQuery(e.target.value))}
           onKeyDown={(e) => e.key === "Enter" && handleSearch()}
@@ -59,7 +61,7 @@ export default function GameSearch({ onSearch }) {
           className="flex items-center justify-center gap-2 px-3 py-2 bg-gray-800 rounded-xl hover:bg-gray-700 sm:px-4"
         >
           <FaFilter />
-          <span className="hidden sm:inline">Фильтры</span>
+          <span className="hidden sm:inline">{t("search.filters")}</span>
         </button>
         <button
           onClick={handleSearch}
@@ -70,7 +72,7 @@ export default function GameSearch({ onSearch }) {
               : "bg-blue-600 hover:bg-blue-500"
           }`}
         >
-          {isLoading ? "Поиск..." : "Поиск"}
+          {isLoading ? t("search.searching") : t("search.search")}
         </button>
       </div>
 
@@ -78,13 +80,13 @@ export default function GameSearch({ onSearch }) {
         <div className="w-full max-w-3xl px-4 mt-4 bg-gray-800 p-4 rounded-xl">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block mb-1 text-sm">Жанры:</label>
+              <label className="block mb-1 text-sm">{t("search.genre")}:</label>
               <select
                 className="w-full p-2 bg-gray-700 rounded-xl"
                 value={filters.tags}
                 onChange={(e) => dispatch(setTag(e.target.value))}
               >
-                <option value="">Все</option>
+                <option value="">All</option>
                 <option>Action</option>
                 <option>RPG</option>
                 <option>Strategy</option>
@@ -93,7 +95,7 @@ export default function GameSearch({ onSearch }) {
             </div>
 
             <div>
-              <label className="block mb-1 text-sm">Рейтинг (мин):</label>
+              <label className="block mb-1 text-sm">{t("search.min_rating")}:</label>
               <input
                 type="number"
                 min="0"
@@ -105,7 +107,7 @@ export default function GameSearch({ onSearch }) {
             </div>
 
             <div>
-              <label className="block mb-1 text-sm">Рейтинг (макс):</label>
+              <label className="block mb-1 text-sm">{t("search.max_rating")}:</label>
               <input
                 type="number"
                 min="0"
@@ -126,7 +128,7 @@ export default function GameSearch({ onSearch }) {
                 : "bg-blue-600 hover:bg-blue-500"
             }`}
           >
-            {isLoading ? "Применение..." : "Применить фильтры"}
+            {isLoading ? t("search.applying") : t("search.apply")}
           </button>
         </div>
       )}

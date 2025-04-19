@@ -1,0 +1,62 @@
+{
+    "hello_user": "Hello, {{username}}!",
+    "logout": "Logout",
+    "please_login": "Please log in to use search",
+    "search_error": "Error while searching games.",
+    "no_games_found": "No games found",
+    "home.login": "Login",
+    "back.button":"Back",
+  
+    "login": {
+      "title": "Login",
+      "username": "Username",
+      "password": "Password",
+      "button": "Login",
+      "loading": "Logging in...",
+      "error": "Login failed! Check your username and password.",
+      "fill_fields": "Please enter both username and password.",
+      "no_account": "No account?",
+      "register": "Register"
+    },
+  
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "password": "Password",
+      "button": "Register",
+      "loading": "Registering...",
+      "success": "Registration successful. Please log in.",
+      "error": "Registration error. Please try again.",
+      "have_account": "Already have an account?",
+      "login": "Login"
+    },
+    "game": {
+      "release_date": "Release date",
+      "unknown": "Unknown"
+    },
+    "search": {
+      "placeholder": "Enter game name",
+      "search": "Search",
+      "searching": "Searching...",
+      "apply": "Apply filters",
+      "applying": "Applying...",
+      "filters": "Filters",
+      "genre": "Genres",
+      "min_rating": "Rating (min)",
+      "max_rating": "Rating (max)"
+    },
+    "game_detail":{
+        "loading": "Loading",
+        "game": "Game",
+        "releaseDate": "Release Date",
+        "rating": "Rating",
+        "russianLanguage": "Russian Language",
+        "supported": "Supported",
+        "notSupported": "Not Supported",
+        "tags": "Tags",
+        "openInSteam": "Open in Steam"
+
+    }
+  
+  }
+  

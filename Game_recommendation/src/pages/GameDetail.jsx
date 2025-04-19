@@ -4,6 +4,7 @@ import { getToken } from "../services/auth";
 import { useDispatch } from "react-redux";
 import { setQuery, setFilters, setResults } from "../features/search/searchSlice";
 import BackButton from "../components/BackButton";
+import { useTranslation } from "react-i18next";
 
 function GameDetail() {
   const { id } = useParams();
@@ -11,6 +12,7 @@ function GameDetail() {
   const dispatch = useDispatch();
   const [game, setGame] = useState(null);
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -44,7 +46,7 @@ function GameDetail() {
     navigate("/", { replace: true });
   };
 
-  if (!game) return <p className="text-white">Загрузка...</p>;
+  if (!game) return <p className="text-white">{t("game_detail.loading")}...</p>;
 
   return (
     <div className="relative min-h-screen bg-gray-900 text-white">
@@ -54,7 +56,7 @@ function GameDetail() {
         {game?.image_url && (
           <img
             src={game.image_url}
-            alt={game.name || "Игра"}
+            alt={game.name || t("game_detail.game")}
             crossOrigin="anonymous"
             className="w-full h-full object-cover"
           />
@@ -65,18 +67,18 @@ function GameDetail() {
         <h1 className="text-3xl font-bold mb-4">{game.name}</h1>
 
         <p className="text-lg mb-2">
-          Дата выхода: {game.release_date ? new Date(game.release_date).toLocaleDateString() : "Неизвестно"}
+          {t("game_detail.releaseDate")}: {game.release_date ? new Date(game.release_date).toLocaleDateString() : t("game_detail.unknown")}
         </p>
 
-        <p className="text-lg mb-2">Рейтинг: {game.rating ?? "Нет данных"}</p>
+        <p className="text-lg mb-2">{t("game_detail.rating")}: {game.rating ?? t("game_detail.noData")}</p>
 
         <p className="text-lg mb-4">
-          Русский язык: {game.russian_supported ? "Поддерживается" : "Не поддерживается"}
+          {t("game_detail.russianLanguage")}: {game.russian_supported ? t("game_detail.supported") : t("game_detail.notSupported")}
         </p>
 
         {game.tags.length > 0 && (
           <div className="mb-6">
-            <p className="text-lg mb-2">Теги:</p>
+            <p className="text-lg mb-2">{t("tags")}:</p>
             <div className="flex flex-wrap gap-2">
               {game.tags.map((tag, index) => (
                 <span
@@ -96,7 +98,7 @@ function GameDetail() {
           rel="noopener noreferrer"
           className="inline-block mt-6 bg-blue-600 hover:bg-blue-700 transition px-6 py-3 rounded-lg text-white text-lg"
         >
-          🔗 Открыть в Steam
+          🔗 {t("game_detail.openInSteam")}
         </a>
       </div>
     </div>

@@ -1,13 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 export default function GameCard({ game }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const getRatingColor = (rating) => {
-    if (rating === null || rating === undefined) return "bg-gray-600"; // Нет данных
-    if (rating >= 80) return "bg-green-500"; // Высокий рейтинг
-    if (rating >= 50) return "bg-yellow-500"; // Средний рейтинг
-    return "bg-red-500"; // Низкий рейтинг
+    if (rating === null || rating === undefined) return "bg-gray-600";
+    if (rating >= 80) return "bg-green-500";
+    if (rating >= 50) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
@@ -23,7 +25,7 @@ export default function GameCard({ game }) {
       <div className="flex-1">
         <h3 className="text-lg font-semibold">{game.name}</h3>
         <p className="text-gray-400 text-sm">
-          Дата выхода: {game.release_date || "Неизвестно"}
+          {t("game.release_date")}: {game.release_date || t("game.unknown")}
         </p>
       </div>
       <div
