@@ -72,6 +72,9 @@ function HomePage() {
     if (Date.now() - lastSearchTime.current < 2000 || isLoading) return;
     lastSearchTime.current = Date.now();
   
+    setErrorMessage("");
+    setRandomGif("");
+  
     if (!query || query.trim() === "") {
       setErrorMessage(t("search_empty"));
       return;
@@ -100,6 +103,7 @@ function HomePage() {
       setErrorMessage(t("search_error"));
     }
   };
+  
   
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center pt-16 px-4">

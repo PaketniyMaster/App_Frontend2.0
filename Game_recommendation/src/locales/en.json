@@ -58,7 +58,8 @@
         "tags": "Tags",
         "openInSteam": "Open in Steam",
         "description": "Description",
-        "summary": "Summary"
+        "summary": "Summary",
+        "noData": "No data available"
 
     }
     

@@ -52,7 +52,7 @@ function GameDetail() {
 
   return (
     <div className="relative min-h-screen bg-gray-900 text-white">
-      <div className="absolute top-0 left-0 m-4 z-10">
+      <div className="fixed top-0 left-0 m-4 z-10">
         <BackButton onClick={handleBack} />
       </div>
 

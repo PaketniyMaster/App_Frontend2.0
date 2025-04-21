@@ -59,7 +59,8 @@
          "tags": "Теги",
          "openInSteam": "Открыть в Steam",
          "description": "Описание",
-         "summary": "Сводка отзывов"
+         "summary": "Сводка отзывов",
+         "noData": "No data available"
     }
   
   

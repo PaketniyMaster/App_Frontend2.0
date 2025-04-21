@@ -93,6 +93,9 @@ export default function GameSearch({ onSearch }) {
                 <option>RPG</option>
                 <option>Strategy</option>
                 <option>Adventure</option>
+                <option>Indie</option>
+                <option>Casual</option>
+                <option>Simulation</option>
               </select>
             </div>
 
