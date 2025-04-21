@@ -135,3 +135,37 @@ export async function searchGames({ query, tags, min_rating, max_rating }) {
         return [];
     }
 }
+
+
+// Поиск игр с учетом языка (полнотекстовый поиск)
+export async function searchGamesByLanguage({ query, lang }) {
+    const token = getToken();
+    if (!token) {
+        console.warn("Токен не найден, доступ к поиску ограничен");
+        return [];
+    }
+
+    try {
+        const params = new URLSearchParams();
+        if (query) params.append("query", query);
+        if (lang) params.append("lang", lang);
+
+        const response = await fetch(`${API_URL}/games/search_by_language?${params.toString()}`, {
+            method: "GET",
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`Ошибка поиска по языку: ${response.status} - ${errorText}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Ошибка поиска по языку:", error.message);
+        return [];
+    }
+}

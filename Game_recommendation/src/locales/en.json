@@ -6,6 +6,7 @@
     "no_games_found": "No games found",
     "home.login": "Login",
     "back.button":"Back",
+    "search_empty": "The search is empty, enter the text to continue",
   
     "login": {
       "title": "Login",
@@ -43,7 +44,8 @@
       "filters": "Filters",
       "genre": "Genres",
       "min_rating": "Rating (min)",
-      "max_rating": "Rating (max)"
+      "max_rating": "Rating (max)",
+      "search_in_description": "Search by description"
     },
     "game_detail":{
         "loading": "Loading",
@@ -54,9 +56,12 @@
         "supported": "Supported",
         "notSupported": "Not Supported",
         "tags": "Tags",
-        "openInSteam": "Open in Steam"
+        "openInSteam": "Open in Steam",
+        "description": "Description",
+        "summary": "Summary"
 
     }
+    
   
   }
   

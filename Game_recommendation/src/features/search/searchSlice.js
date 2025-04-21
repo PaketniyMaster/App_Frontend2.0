@@ -6,6 +6,7 @@ const initialState = {
     tags: "",
     min_rating: "",
     max_rating: "",
+    searchDescription: false, // новое поле
   },
   results: []
 };
@@ -41,6 +42,11 @@ const searchSlice = createSlice({
     setResults(state, action) {
       state.results = action.payload;
     },
+    setSearchDescription(state, action) {
+      state.filters.searchDescription = action.payload;
+    },
+    
+
     setFilters(state, action) {
       const { tags = "", min_rating = "", max_rating = "" } = action.payload || {};
       state.filters.tags = tags;
@@ -58,6 +64,7 @@ export const {
   resetFilters,
   setResults,
   setFilters,
+  setSearchDescription,
 } = searchSlice.actions;
 
 export default searchSlice.reducer;

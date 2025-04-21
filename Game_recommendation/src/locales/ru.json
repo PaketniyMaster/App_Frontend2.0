@@ -6,6 +6,8 @@
     "no_games_found": "Игры не найдены",
     "home.login": "Войти",
     "back.button":"Назад",
+    "search_empty": "Поиск пустой, введите текст для продолжения",
+
 
     "login": {
       "title": "Вход",
@@ -43,7 +45,8 @@
       "filters": "Фильтры",
       "genre": "Жанры",
       "min_rating": "Рейтинг (мин)",
-      "max_rating": "Рейтинг (макс)"
+      "max_rating": "Рейтинг (макс)",
+      "search_in_description": "Искать по описанию"
     },
     "game_detail":{
         "loading": "Загрузка",
@@ -54,7 +57,9 @@
          "supported": "Поддерживается",
          "notSupported": "Не поддерживается",
          "tags": "Теги",
-         "openInSteam": "Открыть в Steam"
+         "openInSteam": "Открыть в Steam",
+         "description": "Описание",
+         "summary": "Сводка отзывов"
     }
   
   

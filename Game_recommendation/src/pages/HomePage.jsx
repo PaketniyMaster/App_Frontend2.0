@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import GameCard from "../components/GameCard";
 import Search from "../components/Search";
-import { getToken, removeToken, searchGames, fetchUserProfile } from "../services/auth";
+import { getToken, removeToken, searchGames, fetchUserProfile, searchGamesByLanguage} from "../services/auth";
 import {
   setQuery,
   setTag,
@@ -20,7 +20,6 @@ function HomePage() {
   const [randomGif, setRandomGif] = useState("");
   const lastSearchTime = useRef(0);
   const [hasSearched, setHasSearched] = useState(false);
-
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -69,26 +68,39 @@ function HomePage() {
       }
       return;
     }
-
+  
     if (Date.now() - lastSearchTime.current < 2000 || isLoading) return;
     lastSearchTime.current = Date.now();
-
-    const appliedFilters = {
-      query,
-      tags: filters.tags,
-      min_rating: filters.min_rating !== "" ? parseFloat(filters.min_rating) : null,
-      max_rating: filters.max_rating !== "" ? parseFloat(filters.max_rating) : null,
-    };
+  
+    if (!query || query.trim() === "") {
+      setErrorMessage(t("search_empty"));
+      return;
+    }
+  
     setHasSearched(true);
-
+  
     try {
-      const data = await searchGames(appliedFilters);
+      let data;
+      if (filters.searchDescription) {
+        const lang = navigator.language.startsWith("ru") ? "ru" : "en";
+        data = await searchGamesByLanguage({ query: query.trim(), lang });
+      } else {
+        const appliedFilters = {
+          query,
+          tags: filters.tags,
+          min_rating: filters.min_rating !== "" ? parseFloat(filters.min_rating) : null,
+          max_rating: filters.max_rating !== "" ? parseFloat(filters.max_rating) : null,
+          searchDescription: filters.searchDescription,
+        };
+        data = await searchGames(appliedFilters);
+      }
+  
       dispatch(setResults(data));
     } catch {
       setErrorMessage(t("search_error"));
     }
   };
-
+  
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center pt-16 px-4">
       <header className="fixed top-0 left-0 w-full flex items-center justify-between p-4 bg-gray-800 shadow-md z-20">

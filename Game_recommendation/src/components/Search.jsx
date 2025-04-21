@@ -5,6 +5,7 @@ import {
   setTag,
   setMinRating,
   setMaxRating,
+  setSearchDescription,
 } from "../features/search/searchSlice";
 import { FaFilter } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
@@ -30,6 +31,7 @@ export default function GameSearch({ onSearch }) {
         filters.min_rating !== "" ? parseFloat(filters.min_rating) : null,
       max_rating:
         filters.max_rating !== "" ? parseFloat(filters.max_rating) : null,
+      searchDescription: filters.searchDescription, // добавляем флаг поиска по описанию
     };
 
     try {
@@ -115,6 +117,16 @@ export default function GameSearch({ onSearch }) {
                 className="w-full p-2 bg-gray-700 rounded-xl"
                 value={filters.max_rating}
                 onChange={(e) => dispatch(setMaxRating(e.target.value))}
+              />
+            </div>
+
+            <div>
+              <label className="block mb-1 text-sm">{t("search.search_in_description")}:</label>
+              <input
+                type="checkbox"
+                checked={filters.searchDescription}
+                onChange={(e) => dispatch(setSearchDescription(e.target.checked))}
+                className="w-full p-2 bg-gray-700 rounded-xl"
               />
             </div>
           </div>
